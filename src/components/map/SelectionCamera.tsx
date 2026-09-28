@@ -19,27 +19,28 @@ export function SelectionCamera({ selection }: { selection: Selection | null }) 
     last.current = key;
 
     if (!selection) {
-      // Drop the lifted look-at point so free navigation feels normal again.
-      if (wasSelected) map.easeTo({ elevation: 0, duration: motionDuration(600) });
       return;
     }
     const building = getBuilding(selection.buildingId);
     if (!building) return;
     const tenant = selection.tenantId ? getTenant(selection.tenantId) : undefined;
     const bearing = map.getBearing();
+    const viewportHeight = map.getCanvas().clientHeight || 800;
     const target =
       selection.floor === null
-        ? cameraForBuilding(building, bearing)
+        ? cameraForBuilding(building, bearing, viewportHeight)
         : cameraForFloor(
             building,
             tenant?.floor ?? selection.floor,
             tenant ? (tenant.floorsSpanned ?? 1) : 1,
             bearing,
+            viewportHeight,
           );
 
     // Long hops (another building) get a fly arc; floor changes a gentle ease.
     const c = map.getCenter();
-    const sameBuilding = wasSelected && distanceMeters([c.lng, c.lat], target.center) < 50;
+    // Within ~1.5 km of the new target: ease (same building, new floor).
+    const sameBuilding = wasSelected && distanceMeters([c.lng, c.lat], target.center) < 1500;
     const options = { ...target, essential: true, easing: easeInOutCubic };
     if (sameBuilding) map.easeTo({ ...options, duration: motionDuration(700) });
     else map.flyTo({ ...options, duration: motionDuration(FLY_DURATION_MS) });

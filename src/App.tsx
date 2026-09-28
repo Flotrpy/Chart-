@@ -16,6 +16,8 @@ import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { useSelection } from './hooks/useSelection';
 import { SelectionCamera } from './components/map/SelectionCamera';
 import { FloorLayers } from './components/map/FloorLayers';
+import { FloorMarker } from './components/map/FloorMarker';
+import { getBuilding, getTenant } from './data';
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
@@ -24,6 +26,8 @@ function AppShell() {
   const [mapReady, setMapReady] = useState(false);
   const { notify } = useToast();
   const [selection, dispatch] = useSelection();
+  const selectedBuilding = selection ? getBuilding(selection.buildingId) : undefined;
+  const selectedTenant = selection?.tenantId ? getTenant(selection.tenantId) : undefined;
   const mapRef = useRef<MapLibreMap | null>(null);
   const markReady = useCallback(() => setMapReady(true), []);
   const handleLoad = useCallback(
@@ -78,6 +82,15 @@ function AppShell() {
       <MapView onLoad={handleLoad} onError={markReady}>
         <FloorLayers selection={selection} />
         <SelectionCamera selection={selection} />
+        {selectedBuilding && selection?.floor != null && (
+          <FloorMarker
+            key={`${selectedBuilding.id}:${selection.floor}`}
+            building={selectedBuilding}
+            floor={selectedTenant?.floor ?? selection.floor}
+            span={selectedTenant?.floorsSpanned ?? 1}
+            title={selectedTenant?.name ?? selectedBuilding.name}
+          />
+        )}
         <div className="pointer-events-none absolute right-4 top-4 z-10">
           <MapControls onNotify={(message, tone) => notify({ message, tone })} />
         </div>
