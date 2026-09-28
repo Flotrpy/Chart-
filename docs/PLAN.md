@@ -50,9 +50,11 @@ Lucide icons, Vitest.
 ## Commits (50) grouped by PR
 
 ### Scaffold (on `main`)
+
 1. chore: scaffold Vite, React and TypeScript project
 
 ### PR 1 — `feat/foundation-and-3d-map`
+
 2. chore: configure ESLint and Prettier
 3. test: set up Vitest with jsdom
 4. style: add Tailwind CSS with light-only design tokens
@@ -71,6 +73,7 @@ Lucide icons, Vitest.
 17. feat: add dismissible onboarding hint
 
 ### PR 2 — `feat/search-and-data`
+
 18. feat: define geocoder provider interface
 19. feat: add Photon geocoder provider
 20. feat: add Nominatim provider with rate limiting
@@ -90,6 +93,7 @@ Lucide icons, Vitest.
 34. feat: add CSV tenant import script
 
 ### PR 3 — `feat/floor-level-display`
+
 35. feat: add floor height math utility
 36. test: cover floor math edge cases
 37. feat: add selection state and fly-to for results
