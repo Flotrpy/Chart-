@@ -49,6 +49,19 @@ Lucide icons, Vitest.
 
 ## Commits (50) grouped by PR
 
+This is the history as built. Three deviations from the original plan, each
+recorded in its commit message:
+
+- **#7 `fix: stop tsc from emitting JavaScript…`**: `tsc -b` ran without
+  `noEmit` and `.js` files were committed. History was not rewritten; the fix
+  went forward, and the planned controls and geolocate/fullscreen commits
+  were combined (#14) to keep the total at 50.
+- **#40 `fix: size map container…`**: found by the in-browser check of the
+  floor slab. The planned deep-link code and tests share one commit (#44) to
+  make room.
+- **Self-review fixes come before the docs** (#48) so the README describes
+  the final behaviour.
+
 ### Scaffold (on `main`)
 
 1. chore: scaffold Vite, React and TypeScript project
@@ -60,14 +73,14 @@ Lucide icons, Vitest.
 4. style: add Tailwind CSS with light-only design tokens
 5. feat: add map configuration constants and shared types
 6. feat: add custom light MapLibre style
-7. test: validate map style layers and palette
-8. feat: render base MapLibre map
-9. feat: extrude 3D buildings with height-based gradient
-10. feat: emphasize NYC landmark towers
-11. feat: ease camera into default Manhattan view
-12. style: add glass panel and icon button primitives
-13. feat: add zoom, compass, tilt and rotate controls
-14. feat: add geolocate and fullscreen controls
+7. fix: stop tsc from emitting JavaScript into the source tree
+8. test: validate map style layers and palette
+9. feat: render base MapLibre map
+10. feat: extrude 3D buildings with height-based gradient
+11. feat: emphasize NYC landmark towers
+12. feat: ease camera into default Manhattan view
+13. style: add glass panel and icon button primitives
+14. feat: add map navigation, locate and fullscreen controls
 15. feat: add branded loading screen until first render
 16. feat: add attribution footer control
 17. feat: add dismissible onboarding hint
@@ -99,18 +112,19 @@ Lucide icons, Vitest.
 37. feat: add selection state and fly-to for results
 38. feat: render selected building as translucent glass shell
 39. feat: add highlighted floor slab with rise animation
-40. feat: pin floating floor marker at floor height
-41. feat: add elevator-style floor selector
-42. feat: add lazy-loaded tenant detail panel
-43. feat: encode selection and camera in deep links
-44. test: cover deep link round-tripping
+40. fix: size map container and restore floor slab opacity
+41. feat: pin floating floor marker at floor height
+42. feat: add elevator-style floor selector
+43. feat: add lazy-loaded tenant detail panel
+44. feat: encode selection and camera in deep links
 45. feat: adapt panels to mobile bottom sheets
 46. a11y: announce floor changes and manage focus
-47. perf: split vendor chunks and reuse map sources
-48. docs: write README with architecture and data guide
-49. docs: add limitations and pull request descriptions
-50. fix: address self-review gaps
+47. perf: split vendor chunks and tune map rendering
+48. fix: address self-review gaps
+49. docs: write README with architecture and data guide
+50. docs: add limitations, PR descriptions and screenshots
 
-Every commit must pass `npm run lint`, `npm run typecheck`, `npm test` and
-`npm run build` (for commits made before a script exists, only the scripts that
-exist at that point apply). PRs are merged with `git merge --no-ff`, never squashed.
+Every commit passes `npm run format:check`, `npm run lint`,
+`npm run typecheck`, `npm test` and `npm run build` (for commits made before a
+script existed, only the scripts that existed then). PRs are merged with
+`git merge --no-ff`, never squashed.

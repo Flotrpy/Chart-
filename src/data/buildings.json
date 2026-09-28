@@ -44,7 +44,7 @@
     "totalFloors": 104,
     "heightMeters": 417,
     "groundElevation": 0,
-    "floorHeightMeters": 3.9,
+    "floorHeightMeters": 3.85,
     "lobbyHeightMeters": 15,
     "aliases": ["1 WTC", "Freedom Tower", "One WTC"]
   },
@@ -68,7 +68,7 @@
     "totalFloors": 77,
     "heightMeters": 282,
     "groundElevation": 0,
-    "floorHeightMeters": 3.6,
+    "floorHeightMeters": 3.58,
     "lobbyHeightMeters": 6,
     "aliases": ["405 Lexington"]
   },
@@ -92,7 +92,7 @@
     "totalFloors": 66,
     "heightMeters": 259,
     "groundElevation": 0,
-    "floorHeightMeters": 3.85,
+    "floorHeightMeters": 3.8,
     "lobbyHeightMeters": 6,
     "aliases": ["30 Rock", "Rockefeller Center", "Comcast Building"]
   },
@@ -163,7 +163,7 @@
     "totalFloors": 85,
     "heightMeters": 426,
     "groundElevation": 0,
-    "floorHeightMeters": 4.9,
+    "floorHeightMeters": 4.88,
     "lobbyHeightMeters": 10,
     "aliases": ["432 Park"]
   },

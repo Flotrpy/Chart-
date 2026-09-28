@@ -71,6 +71,10 @@ export function MapView({
         maxPitch: MAX_PITCH,
         maxBounds: MAX_BOUNDS,
         attributionControl: false,
+        // 3× screens cost ~2.25× the fill rate of 2× for little visible gain.
+        pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+        // Keep the last few zooms around when flying between buildings.
+        maxTileCacheZoomLevels: 6,
         canvasContextAttributes: { antialias: true },
       });
     } catch (err) {
@@ -105,7 +109,9 @@ export function MapView({
     <div className="absolute inset-0">
       <div
         ref={containerRef}
-        className="absolute inset-0"
+        // MapLibre's CSS forces `position: relative` on this element, so it
+        // needs an explicit size rather than relying on inset positioning.
+        className="h-full w-full"
         role="region"
         aria-label="3D map of New York City. Drag to pan, right-drag or two-finger drag to rotate and tilt."
       />

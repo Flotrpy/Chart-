@@ -32,11 +32,12 @@ export function validateBuildings(buildings: Building[]): ValidationIssue[] {
     if (!(b.floorHeightMeters > 0)) {
       issues.push({ id: b.id, message: 'floorHeightMeters must be > 0' });
     }
-    const minHeight = b.lobbyHeightMeters + (b.totalFloors - 1) * b.floorHeightMeters;
-    if (b.heightMeters + 1e-6 < minHeight * 0.85) {
+    // Must match lib/floorMath: floor 1 starts above the lobby.
+    const stacked = b.lobbyHeightMeters + b.totalFloors * b.floorHeightMeters;
+    if (b.heightMeters + 1e-6 < stacked * 0.85) {
       issues.push({
         id: b.id,
-        message: `heightMeters ${b.heightMeters} is far below floors × storey height (${minHeight.toFixed(1)})`,
+        message: `heightMeters ${b.heightMeters} is far below lobby + floors × storey height (${stacked.toFixed(1)})`,
       });
     }
   }
