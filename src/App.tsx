@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { MapView } from './components/map/MapView';
 import { MapControls } from './components/controls/MapControls';
 import { LoadingScreen } from './components/ui/LoadingScreen';
@@ -19,6 +19,10 @@ import { FloorLayers } from './components/map/FloorLayers';
 import { FloorMarker } from './components/map/FloorMarker';
 import { getBuilding, getTenant } from './data';
 import { FloorSelector } from './components/floors/FloorSelector';
+import { PanelSkeleton } from './components/ui/PanelSkeleton';
+
+// Only needed once something is selected: keep it out of the initial bundle.
+const DetailPanel = lazy(() => import('./components/detail/DetailPanel'));
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
@@ -118,6 +122,20 @@ function AppShell() {
             onSelectTenant={(t) => dispatch({ type: 'selectTenant', tenantId: t.id })}
             onClose={() => dispatch({ type: 'clear' })}
           />
+        </aside>
+      )}
+      {selectedBuilding && selection && (
+        <aside className="pointer-events-none absolute bottom-16 right-[76px] top-4 z-20 flex w-[min(22rem,calc(100vw-2rem))] items-start">
+          <Suspense fallback={<PanelSkeleton />}>
+            <DetailPanel
+              building={selectedBuilding}
+              tenant={selectedTenant ?? null}
+              shareUrl={window.location.href}
+              onClose={() =>
+                selection.tenantId ? dispatch({ type: 'closeTenant' }) : dispatch({ type: 'clear' })
+              }
+            />
+          </Suspense>
         </aside>
       )}
       <LoadingScreen done={mapReady} />

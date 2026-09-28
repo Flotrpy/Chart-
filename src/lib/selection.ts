@@ -15,6 +15,7 @@ export type SelectionAction =
   | { type: 'selectTenant'; tenantId: string }
   | { type: 'selectBuilding'; buildingId: string; floor?: number | null }
   | { type: 'selectFloor'; floor: number | null }
+  | { type: 'closeTenant' }
   | { type: 'clear' };
 
 /** Pure reducer; unknown ids leave state unchanged so bad deep links are harmless. */
@@ -51,6 +52,8 @@ export function selectionReducer(
         floor < tenant.floor + (tenant.floorsSpanned ?? 1);
       return { ...state, floor, tenantId: keepTenant ? state.tenantId : null };
     }
+    case 'closeTenant':
+      return state && state.tenantId ? { ...state, tenantId: null } : state;
     case 'clear':
       return null;
     default:

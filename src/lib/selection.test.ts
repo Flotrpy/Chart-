@@ -40,4 +40,13 @@ describe('selectionReducer', () => {
     const s = selectionReducer(null, { type: 'selectTenant', tenantId: 'acme-corp' });
     expect(selectionReducer(s, { type: 'clear' })).toBeNull();
   });
+
+  it('closeTenant keeps the building and floor', () => {
+    const s = selectionReducer(null, { type: 'selectTenant', tenantId: 'acme-corp' });
+    expect(selectionReducer(s, { type: 'closeTenant' })).toEqual({
+      buildingId: 'empire-state-building',
+      floor: 10,
+      tenantId: null,
+    });
+  });
 });
