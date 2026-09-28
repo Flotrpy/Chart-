@@ -3,6 +3,7 @@ import { MapView } from './components/map/MapView';
 import { MapControls } from './components/controls/MapControls';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import { AttributionControl } from './components/controls/AttributionControl';
+import { OnboardingHint } from './components/ui/OnboardingHint';
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
@@ -24,6 +25,11 @@ export default function App() {
           <MapControls />
         </div>
       </MapView>
+      {mapReady && (
+        <div className="pointer-events-none absolute bottom-16 left-1/2 z-20 -translate-x-1/2">
+          <OnboardingHint />
+        </div>
+      )}
       <footer className="pointer-events-none absolute bottom-3 right-3 z-10 flex justify-end">
         <AttributionControl />
       </footer>
