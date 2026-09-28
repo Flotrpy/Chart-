@@ -24,6 +24,11 @@ import { buildShareUrl, parseDeepLink } from './lib/deepLink';
 import { selectionReducer, type Selection } from './lib/selection';
 import { cameraOf, useDeepLinkSync } from './hooks/useDeepLinkSync';
 import { DEFAULT_CAMERA } from './lib/mapConfig';
+import { DESKTOP_QUERY, useMediaQuery } from './hooks/useMediaQuery';
+import { BottomSheet } from './components/ui/BottomSheet';
+import { SHEET_HEIGHT, type SheetSnap } from './components/ui/sheet';
+import type { CameraPadding } from './components/map/SelectionCamera';
+import { cx } from './components/ui/cx';
 
 // Only needed once something is selected: keep it out of the initial bundle.
 const DetailPanel = lazy(() => import('./components/detail/DetailPanel'));
@@ -55,6 +60,12 @@ function AppShell() {
   const [selection, dispatch] = useSelection(INITIAL.selection);
   const [map, setMap] = useState<MapLibreMap | null>(null);
   useDeepLinkSync(map, selection);
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const [sheetSnap, setSheetSnap] = useState<SheetSnap>('peek');
+  const [mobileTab, setMobileTab] = useState<'details' | 'floors'>('details');
+  const padding: CameraPadding = isDesktop
+    ? { top: 72, right: selection ? 400 : 72, bottom: 48, left: selection ? 352 : 24 }
+    : { top: 72, right: 16, bottom: Math.round(window.innerHeight * SHEET_HEIGHT.peek), left: 16 };
   const selectedBuilding = selection ? getBuilding(selection.buildingId) : undefined;
   const selectedTenant = selection?.tenantId ? getTenant(selection.tenantId) : undefined;
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -116,7 +127,7 @@ function AppShell() {
         animateIntro={!INITIAL.camera && !INITIAL.selection}
       >
         <FloorLayers selection={selection} />
-        <SelectionCamera selection={selection} />
+        <SelectionCamera selection={selection} padding={padding} />
         {selectedBuilding && selection?.floor != null && (
           <FloorMarker
             key={`${selectedBuilding.id}:${selection.floor}`}
@@ -141,33 +152,90 @@ function AppShell() {
       <div className="pointer-events-none absolute left-4 right-[76px] top-4 z-30 sm:right-auto sm:w-[26rem]">
         <SearchBar geocoder={geocoder} onSelect={handleSelect} />
       </div>
-      {selectedBuilding && selection && (
-        <aside className="pointer-events-none absolute bottom-16 left-4 top-20 z-20 flex w-[min(20rem,calc(100vw-2rem))] items-start">
-          <FloorSelector
-            key={selectedBuilding.id}
-            building={selectedBuilding}
-            floor={selection.floor}
-            tenantId={selection.tenantId}
-            onSelectFloor={(floor) => dispatch({ type: 'selectFloor', floor })}
-            onSelectTenant={(t) => dispatch({ type: 'selectTenant', tenantId: t.id })}
-            onClose={() => dispatch({ type: 'clear' })}
-          />
-        </aside>
-      )}
-      {selectedBuilding && selection && (
-        <aside className="pointer-events-none absolute bottom-16 right-[76px] top-4 z-20 flex w-[min(22rem,calc(100vw-2rem))] items-start">
-          <Suspense fallback={<PanelSkeleton />}>
-            <DetailPanel
+      {selectedBuilding &&
+        selection &&
+        (() => {
+          const floorSelector = (
+            <FloorSelector
+              key={selectedBuilding.id}
               building={selectedBuilding}
-              tenant={selectedTenant ?? null}
-              shareUrl={buildShareUrl(selection, map ? cameraOf(map) : undefined)}
-              onClose={() =>
-                selection.tenantId ? dispatch({ type: 'closeTenant' }) : dispatch({ type: 'clear' })
-              }
+              floor={selection.floor}
+              tenantId={selection.tenantId}
+              onSelectFloor={(floor) => dispatch({ type: 'selectFloor', floor })}
+              onSelectTenant={(t) => {
+                dispatch({ type: 'selectTenant', tenantId: t.id });
+                setMobileTab('details');
+              }}
+              onClose={() => dispatch({ type: 'clear' })}
             />
-          </Suspense>
-        </aside>
-      )}
+          );
+          const detail = (
+            <Suspense fallback={<PanelSkeleton />}>
+              <DetailPanel
+                building={selectedBuilding}
+                tenant={selectedTenant ?? null}
+                shareUrl={buildShareUrl(selection, map ? cameraOf(map) : undefined)}
+                onClose={() =>
+                  selection.tenantId
+                    ? dispatch({ type: 'closeTenant' })
+                    : dispatch({ type: 'clear' })
+                }
+              />
+            </Suspense>
+          );
+
+          if (isDesktop) {
+            return (
+              <>
+                <aside className="pointer-events-none absolute bottom-16 left-4 top-20 z-20 flex w-80 animate-[slide-in-left_240ms_var(--ease-out)] items-start">
+                  {floorSelector}
+                </aside>
+                <aside className="pointer-events-none absolute bottom-16 right-[76px] top-4 z-20 flex w-[22rem] animate-[slide-in-right_240ms_var(--ease-out)] items-start">
+                  {detail}
+                </aside>
+              </>
+            );
+          }
+
+          const tabs = (
+            <div
+              role="tablist"
+              aria-label="Panel"
+              className="flex gap-1 rounded-md bg-slate-100 p-0.5"
+            >
+              {(['details', 'floors'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileTab === tab}
+                  onClick={() => setMobileTab(tab)}
+                  className={cx(
+                    'h-9 flex-1 rounded-[9px] text-sm font-medium capitalize transition-colors',
+                    mobileTab === tab ? 'bg-white text-ink shadow-sm' : 'text-muted',
+                  )}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          );
+          return (
+            <BottomSheet
+              label={selectedTenant?.name ?? selectedBuilding.name}
+              snap={sheetSnap}
+              onSnapChange={setSheetSnap}
+              header={tabs}
+            >
+              <div
+                role="tabpanel"
+                className="flex h-full flex-col p-2 pt-1 [&>*]:max-h-full [&>*]:shadow-none"
+              >
+                {mobileTab === 'details' ? detail : floorSelector}
+              </div>
+            </BottomSheet>
+          );
+        })()}
       <LoadingScreen done={mapReady} />
     </div>
   );

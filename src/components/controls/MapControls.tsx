@@ -124,7 +124,7 @@ export function MapControls({ onNotify }: MapControlsProps) {
 
   return (
     <nav aria-label="Map controls" className="pointer-events-auto flex flex-col gap-2">
-      <GlassPanel radius="md" className="flex flex-col p-0.5">
+      <GlassPanel radius="md" className="hidden flex-col p-0.5 md:flex">
         <IconButton label="Zoom in" onClick={() => map.zoomIn({ duration: motionDuration(300) })}>
           <Plus {...ICON_PROPS} />
         </IconButton>
@@ -142,13 +142,15 @@ export function MapControls({ onNotify }: MapControlsProps) {
             className="text-primary transition-transform duration-100"
           />
         </IconButton>
-        <Divider />
-        <IconButton label="Rotate left" onClick={() => rotate(-ROTATE_STEP)}>
-          <RotateCcw {...ICON_PROPS} />
-        </IconButton>
-        <IconButton label="Rotate right" onClick={() => rotate(ROTATE_STEP)}>
-          <RotateCw {...ICON_PROPS} />
-        </IconButton>
+        <div className="hidden flex-col md:flex">
+          <Divider />
+          <IconButton label="Rotate left" onClick={() => rotate(-ROTATE_STEP)}>
+            <RotateCcw {...ICON_PROPS} />
+          </IconButton>
+          <IconButton label="Rotate right" onClick={() => rotate(ROTATE_STEP)}>
+            <RotateCw {...ICON_PROPS} />
+          </IconButton>
+        </div>
         <Divider />
         <IconButton
           label={is3D ? 'Switch to 2D view' : 'Switch to 3D view'}
