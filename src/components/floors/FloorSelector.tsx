@@ -155,7 +155,7 @@ export function FloorSelector({
                     className={cx(
                       'inline-flex h-7 min-w-9 items-center justify-center rounded-md px-1.5 text-xs font-semibold tabular-nums',
                       active
-                        ? 'bg-highlight text-white'
+                        ? 'bg-highlight text-ink'
                         : row.tenants.length
                           ? 'bg-slate-100 text-ink'
                           : 'text-muted',

@@ -76,7 +76,7 @@ export function FloorMarker({ building, floor, span = 1, title }: FloorMarkerPro
       {/* Anchor: the label sits up-right of the point with a leader line. */}
       <div className="relative -translate-y-full">
         <div className="floor-marker-pop ml-3 mb-3 flex max-w-[16rem] items-center gap-2 rounded-md border border-white/70 bg-white/95 py-1.5 pl-2 pr-3 shadow-lift backdrop-blur">
-          <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-highlight text-white">
+          <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-highlight text-ink">
             <Layers {...ICON_PROPS_SM} />
           </span>
           <span className="min-w-0">

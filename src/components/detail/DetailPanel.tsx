@@ -22,8 +22,8 @@ import { useToast } from '../ui/toastContext';
 export interface DetailPanelProps {
   building: Building;
   tenant: Tenant | null;
-  /** Absolute URL that reopens exactly this view. */
-  shareUrl: string;
+  /** Returns an absolute URL that reopens exactly this view (read at click time). */
+  getShareUrl: () => string;
   onClose: () => void;
 }
 
@@ -51,7 +51,7 @@ function Row({ icon: Icon, children }: { icon: typeof Clock; children: React.Rea
 }
 
 /** Tenant (or building) details. Lazy-loaded: not part of the initial bundle. */
-export default function DetailPanel({ building, tenant, shareUrl, onClose }: DetailPanelProps) {
+export default function DetailPanel({ building, tenant, getShareUrl, onClose }: DetailPanelProps) {
   const { notify } = useToast();
   const [copied, setCopied] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -75,7 +75,7 @@ export default function DetailPanel({ building, tenant, shareUrl, onClose }: Det
   }, [copied]);
 
   const share = async () => {
-    if (await copyText(shareUrl)) {
+    if (await copyText(getShareUrl())) {
       setCopied(true);
       notify({ key: 'share', tone: 'success', message: 'Link copied to clipboard.' });
     } else {

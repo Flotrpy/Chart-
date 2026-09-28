@@ -14,7 +14,7 @@ describe('DetailPanel', () => {
       <DetailPanel
         building={esb}
         tenant={acme}
-        shareUrl="https://x/?tenant=acme-corp"
+        getShareUrl={() => 'https://x/?tenant=acme-corp'}
         onClose={() => {}}
       />,
     );
@@ -38,7 +38,7 @@ describe('DetailPanel', () => {
       <DetailPanel
         building={esb}
         tenant={acme}
-        shareUrl="https://x/?tenant=acme-corp"
+        getShareUrl={() => 'https://x/?tenant=acme-corp'}
         onClose={() => {}}
       />,
     );
@@ -49,7 +49,14 @@ describe('DetailPanel', () => {
 
   it('describes the building when no tenant is selected and can close', async () => {
     const onClose = vi.fn();
-    render(<DetailPanel building={esb} tenant={null} shareUrl="https://x/" onClose={onClose} />);
+    render(
+      <DetailPanel
+        building={esb}
+        tenant={null}
+        getShareUrl={() => 'https://x/'}
+        onClose={onClose}
+      />,
+    );
     expect(screen.getByRole('heading', { name: 'Empire State Building' })).toBeInTheDocument();
     expect(screen.getByText(/102 floors · roof 381 m/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /close details/i }));

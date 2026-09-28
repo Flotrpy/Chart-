@@ -30,7 +30,7 @@ function ToastItem({ toast, dismiss }: { toast: Toast; dismiss: (key: string) =>
   return (
     <li
       role={toast.tone === 'error' ? 'alert' : 'status'}
-      className="glass pointer-events-auto flex w-[min(24rem,calc(100vw-2rem))] animate-[slide-up_220ms_var(--ease-out)] items-start gap-3 rounded-md py-3 pl-3.5 pr-1.5 shadow-lift"
+      className="glass pointer-events-auto flex w-[min(24rem,calc(100vw-2rem))] animate-[slide-down_220ms_var(--ease-out)] items-start gap-3 rounded-md py-3 pl-3.5 pr-1.5 shadow-lift"
     >
       <Icon {...ICON_PROPS_SM} className={cx('mt-0.5 shrink-0', TONE_CLASS[toast.tone])} />
       <p className="flex-1 text-sm text-ink">{toast.message}</p>
@@ -46,7 +46,7 @@ function ToastItem({ toast, dismiss }: { toast: Toast; dismiss: (key: string) =>
   );
 }
 
-/** Provides `useToast()` and renders the toast stack (bottom-centre). */
+/** Provides `useToast()` and renders the toast stack (top-centre, below search on phones). */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -71,7 +71,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <ol
         aria-label="Notifications"
-        className="pointer-events-none fixed inset-x-0 bottom-16 z-[60] flex flex-col items-center gap-2 px-4 sm:bottom-6"
+        className="pointer-events-none fixed inset-x-0 top-20 z-[60] flex flex-col items-center gap-2 px-4 xl:top-4"
       >
         {toasts.map((t) => (
           <ToastItem key={t.key} toast={t} dismiss={dismiss} />

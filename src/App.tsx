@@ -83,8 +83,20 @@ function AppShell() {
       mapRef.current = instance;
       setMap(instance);
       markReady();
+      let warned = false;
+      instance.on('error', () => {
+        if (warned) return;
+        warned = true;
+        notify({
+          key: 'tiles',
+          tone: 'error',
+          message: navigator.onLine
+            ? 'Some map data couldn’t load. Buildings and labels may be missing.'
+            : 'You’re offline, so map data can’t load.',
+        });
+      });
     },
-    [markReady],
+    [markReady, notify],
   );
 
   useOnlineStatus((online) =>
@@ -154,7 +166,15 @@ function AppShell() {
           <OnboardingHint />
         </div>
       )}
-      <footer className="pointer-events-none absolute bottom-3 right-3 z-10 flex justify-end">
+      <footer
+        className="pointer-events-none absolute bottom-3 right-3 z-50 flex justify-end transition-[bottom] duration-[260ms] ease-out"
+        // OSM's ODbL requires visible attribution: keep it above the mobile sheet.
+        style={
+          !isDesktop && selection
+            ? { bottom: `calc(${SHEET_HEIGHT[sheetSnap] * 100}dvh + 8px)` }
+            : undefined
+        }
+      >
         <AttributionControl />
       </footer>
       <div className="pointer-events-none absolute left-4 right-[76px] top-4 z-30 sm:right-auto sm:w-[26rem]">
@@ -182,7 +202,7 @@ function AppShell() {
               <DetailPanel
                 building={selectedBuilding}
                 tenant={selectedTenant ?? null}
-                shareUrl={buildShareUrl(selection, map ? cameraOf(map) : undefined)}
+                getShareUrl={() => buildShareUrl(selection, map ? cameraOf(map) : undefined)}
                 onClose={() =>
                   selection.tenantId
                     ? dispatch({ type: 'closeTenant' })
