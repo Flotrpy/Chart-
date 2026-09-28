@@ -1,7 +1,10 @@
+import { MapView } from './components/map/MapView';
+
 export default function App() {
   return (
-    <main className="flex h-full items-center justify-center bg-bg">
-      <h1 className="text-2xl font-semibold tracking-tight text-ink">NYC Floors</h1>
-    </main>
+    <div className="relative h-full w-full overflow-hidden bg-bg">
+      <h1 className="sr-only">NYC Floors — 3D map of New York City</h1>
+      <MapView />
+    </div>
   );
 }
