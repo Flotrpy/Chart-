@@ -1,0 +1,28 @@
+{
+  "name": "nyc-floors-3d",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Searchable 3D map of New York City with floor-level tenant display.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.1"
+  }
+}
