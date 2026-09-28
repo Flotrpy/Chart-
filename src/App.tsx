@@ -18,6 +18,7 @@ import { SelectionCamera } from './components/map/SelectionCamera';
 import { FloorLayers } from './components/map/FloorLayers';
 import { FloorMarker } from './components/map/FloorMarker';
 import { getBuilding, getTenant } from './data';
+import { FloorSelector } from './components/floors/FloorSelector';
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
@@ -106,6 +107,19 @@ function AppShell() {
       <div className="pointer-events-none absolute left-4 right-[76px] top-4 z-30 sm:right-auto sm:w-[26rem]">
         <SearchBar geocoder={geocoder} onSelect={handleSelect} />
       </div>
+      {selectedBuilding && selection && (
+        <aside className="pointer-events-none absolute bottom-16 left-4 top-20 z-20 flex w-[min(20rem,calc(100vw-2rem))] items-start">
+          <FloorSelector
+            key={selectedBuilding.id}
+            building={selectedBuilding}
+            floor={selection.floor}
+            tenantId={selection.tenantId}
+            onSelectFloor={(floor) => dispatch({ type: 'selectFloor', floor })}
+            onSelectTenant={(t) => dispatch({ type: 'selectTenant', tenantId: t.id })}
+            onClose={() => dispatch({ type: 'clear' })}
+          />
+        </aside>
+      )}
       <LoadingScreen done={mapReady} />
     </div>
   );
