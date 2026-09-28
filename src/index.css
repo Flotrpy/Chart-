@@ -122,3 +122,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+@keyframes loader-rise {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.loader-bar {
+  animation: loader-rise 1.2s var(--ease-out) infinite;
+}
