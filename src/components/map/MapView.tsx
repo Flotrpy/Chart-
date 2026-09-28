@@ -71,6 +71,10 @@ export function MapView({
         maxPitch: MAX_PITCH,
         maxBounds: MAX_BOUNDS,
         attributionControl: false,
+        // 3× screens cost ~2.25× the fill rate of 2× for little visible gain.
+        pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+        // Keep the last few zooms around when flying between buildings.
+        maxTileCacheZoomLevels: 6,
         canvasContextAttributes: { antialias: true },
       });
     } catch (err) {
