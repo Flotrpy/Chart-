@@ -10,12 +10,16 @@ import type { MapLibreMap } from './lib/maplibre';
 import type { SearchResult } from './types/search';
 import { FLY_DURATION_MS } from './lib/mapConfig';
 import { easeInOutCubic, motionDuration } from './lib/motion';
+import { ToastProvider } from './components/ui/Toasts';
+import { useToast } from './components/ui/toastContext';
+import { useOnlineStatus } from './hooks/useOnlineStatus';
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
 
-export default function App() {
+function AppShell() {
   const [mapReady, setMapReady] = useState(false);
+  const { notify } = useToast();
   const mapRef = useRef<MapLibreMap | null>(null);
   const markReady = useCallback(() => setMapReady(true), []);
   const handleLoad = useCallback(
@@ -24,6 +28,16 @@ export default function App() {
       markReady();
     },
     [markReady],
+  );
+
+  useOnlineStatus((online) =>
+    notify({
+      key: 'network',
+      tone: online ? 'success' : 'info',
+      message: online
+        ? 'Back online.'
+        : 'You’re offline. Saved tenants still work; address search and new map areas need a connection.',
+    }),
   );
 
   const handleSelect = useCallback((result: SearchResult) => {
@@ -47,7 +61,7 @@ export default function App() {
       <h1 className="sr-only">NYC Floors — 3D map of New York City</h1>
       <MapView onLoad={handleLoad} onError={markReady}>
         <div className="pointer-events-none absolute right-4 top-4 z-10">
-          <MapControls />
+          <MapControls onNotify={(message, tone) => notify({ message, tone })} />
         </div>
       </MapView>
       {mapReady && (
@@ -63,5 +77,13 @@ export default function App() {
       </div>
       <LoadingScreen done={mapReady} />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppShell />
+    </ToastProvider>
   );
 }

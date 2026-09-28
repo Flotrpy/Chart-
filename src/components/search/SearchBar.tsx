@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { Loader2, Search, X } from 'lucide-react';
 import type { SearchResult } from '../../types/search';
 import type { GeocoderClient } from '../../lib/geocoder/client';
@@ -10,6 +10,7 @@ import { cx } from '../ui/cx';
 import { ResultIcon } from './ResultIcon';
 import { KIND_LABEL } from './kindLabels';
 import { LiveRegion } from '../ui/LiveRegion';
+import { useToast } from '../ui/toastContext';
 
 interface SearchBarProps {
   geocoder: GeocoderClient;
@@ -48,6 +49,17 @@ export function SearchBar({ geocoder, onSelect }: SearchBarProps) {
   const listId = useId();
   const search = useSearch(query, geocoder);
   const { recent, add: addRecent, clear: clearRecent } = useRecentSearches();
+  const { notify } = useToast();
+
+  useEffect(() => {
+    if (search.error) {
+      notify({
+        key: 'search-error',
+        tone: search.offline ? 'info' : 'error',
+        message: search.error,
+      });
+    }
+  }, [search.error, search.offline, notify]);
 
   const trimmed = query.trim();
   const sections: Section[] = trimmed
@@ -97,6 +109,8 @@ export function SearchBar({ geocoder, onSelect }: SearchBarProps) {
         if (open && pick) {
           e.preventDefault();
           choose(pick);
+        } else if (query.trim() && search.status !== 'loading' && options.length === 0) {
+          notify({ key: 'no-results', message: `No results for “${query.trim()}”.` });
         }
         break;
       }
