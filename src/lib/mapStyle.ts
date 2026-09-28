@@ -1,4 +1,6 @@
 import type { ExpressionSpecification, LayerSpecification, StyleSpecification } from 'maplibre-gl';
+import type { FeatureCollection, Point } from 'geojson';
+import { LANDMARKS } from '../data/landmarks';
 import {
   BUILDINGS_MIN_ZOOM,
   FONT_BOLD,
@@ -9,6 +11,9 @@ import {
 
 /** Vector source id used by every basemap layer. */
 export const BASEMAP_SOURCE = 'openmaptiles';
+
+/** Inline GeoJSON source holding NYC landmark label points. */
+export const LANDMARK_SOURCE = 'landmarks';
 
 /** Layer id of the extruded OSM buildings (the glass shell dims this). */
 export const BUILDINGS_LAYER_ID = 'buildings-3d';
@@ -36,6 +41,8 @@ export const PALETTE = {
   labelText: '#334155',
   labelMuted: '#556274',
   waterLabel: '#3B6FB0',
+  landmarkText: '#1E293B',
+  landmarkDot: '#2563EB',
   halo: '#FFFFFF',
   /** Building colour ramp, low-rise → supertall: cool light grey to warm white. */
   buildingLow: '#E3E6EB',
@@ -294,6 +301,18 @@ function buildingLayers(): LayerSpecification[] {
   ];
 }
 
+export function landmarkFeatures(): FeatureCollection<Point, { name: string; rank: number }> {
+  return {
+    type: 'FeatureCollection',
+    features: LANDMARKS.map((l) => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: l.position },
+      // Lower rank wins label collisions: taller landmarks are placed first.
+      properties: { name: l.name, rank: -l.heightMeters },
+    })),
+  };
+}
+
 const textHalo = {
   'text-halo-color': PALETTE.halo,
   'text-halo-width': 1.4,
@@ -365,6 +384,41 @@ function labelLayers(): LayerSpecification[] {
       paint: { 'text-color': PALETTE.labelMuted, ...textHalo },
     },
     {
+      id: 'landmark-dot',
+      type: 'circle',
+      source: LANDMARK_SOURCE,
+      minzoom: 12,
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 2.5, 16, 4],
+        'circle-color': PALETTE.landmarkDot,
+        'circle-stroke-color': PALETTE.halo,
+        'circle-stroke-width': 1.5,
+        'circle-pitch-alignment': 'map',
+      },
+    },
+    {
+      id: 'landmark-label',
+      type: 'symbol',
+      source: LANDMARK_SOURCE,
+      minzoom: 12,
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': FONT_BOLD,
+        'text-size': ['interpolate', ['linear'], ['zoom'], 12, 11, 16, 14],
+        'text-anchor': 'bottom',
+        'text-offset': [0, -0.6],
+        'text-max-width': 9,
+        'symbol-sort-key': ['get', 'rank'],
+        'text-pitch-alignment': 'viewport',
+      },
+      paint: {
+        'text-color': PALETTE.landmarkText,
+        'text-halo-color': PALETTE.halo,
+        'text-halo-width': 2,
+        'text-halo-blur': 0.3,
+      },
+    },
+    {
       id: 'place-city',
       type: 'symbol',
       source: BASEMAP_SOURCE,
@@ -394,6 +448,10 @@ export function createMapStyle(): StyleSpecification {
       [BASEMAP_SOURCE]: {
         type: 'vector',
         url: TILE_PROVIDER.tileJsonUrl,
+      },
+      [LANDMARK_SOURCE]: {
+        type: 'geojson',
+        data: landmarkFeatures(),
       },
     },
     light: {

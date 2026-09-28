@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
-import { BASEMAP_SOURCE, BUILDINGS_LAYER_ID, PALETTE, createMapStyle } from './mapStyle';
+import {
+  BASEMAP_SOURCE,
+  BUILDINGS_LAYER_ID,
+  PALETTE,
+  createMapStyle,
+  landmarkFeatures,
+} from './mapStyle';
 
 /** Relative luminance per WCAG 2.x, 0 (black) – 1 (white). */
 function luminance(hex: string): number {
@@ -45,6 +51,13 @@ describe('createMapStyle', () => {
   it('draws labels above the buildings', () => {
     const ids = createMapStyle().layers.map((l) => l.id);
     expect(ids.indexOf('road-label')).toBeGreaterThan(ids.indexOf(BUILDINGS_LAYER_ID));
+  });
+
+  it('labels landmarks with the tallest placed first', () => {
+    const features = landmarkFeatures().features;
+    const esb = features.find((f) => f.properties.name === 'Empire State Building');
+    const flatiron = features.find((f) => f.properties.name === 'Flatiron Building');
+    expect(esb && flatiron && esb.properties.rank < flatiron.properties.rank).toBe(true);
   });
 
   it('returns a fresh object each call', () => {
