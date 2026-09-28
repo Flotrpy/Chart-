@@ -24,7 +24,7 @@ export function footprintSizeMeters(b: Building): number {
  */
 export function cameraForFloor(b: Building, floor: number, span = 1, bearing = -20): FloorCamera {
   const size = footprintSizeMeters(b);
-  const zoom = Math.max(16.2, Math.min(17.6, 17.6 - Math.log2(Math.max(size, 60) / 60)));
+  const zoom = Math.max(16.6, Math.min(18.2, 18.2 - Math.log2(Math.max(size, 60) / 60)));
   return {
     center: b.center,
     zoom,

@@ -107,7 +107,9 @@ export function MapView({
     <div className="absolute inset-0">
       <div
         ref={containerRef}
-        className="absolute inset-0"
+        // MapLibre's CSS forces `position: relative` on this element, so it
+        // needs an explicit size rather than relying on inset positioning.
+        className="h-full w-full"
         role="region"
         aria-label="3D map of New York City. Drag to pan, right-drag or two-finger drag to rotate and tilt."
       />

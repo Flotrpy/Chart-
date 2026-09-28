@@ -221,6 +221,7 @@ export function FloorLayers({ selection }: { selection: Selection | null }) {
 
     const wasHidden = map.getLayoutProperty(LAYER_IDS.slab, 'visibility') === 'none';
     const applySlab = () => {
+      map.setPaintProperty(LAYER_IDS.slab, 'fill-extrusion-opacity', 1);
       map.setPaintProperty(LAYER_IDS.slab, 'fill-extrusion-base', slab.base);
       map.setPaintProperty(LAYER_IDS.slab, 'fill-extrusion-height', slab.height);
       map.setPaintProperty(LAYER_IDS.slabGlow, 'fill-extrusion-base', slab.base - GLOW_PAD_M);
@@ -237,6 +238,7 @@ export function FloorLayers({ selection }: { selection: Selection | null }) {
     // First appearance: collapse the slab onto its floor line, then let it
     // rise to full storey height (and the glow fade in) over ~600ms.
     setTransitions(0);
+    map.setPaintProperty(LAYER_IDS.slab, 'fill-extrusion-opacity', 0);
     map.setPaintProperty(LAYER_IDS.slab, 'fill-extrusion-base', slab.base);
     map.setPaintProperty(LAYER_IDS.slab, 'fill-extrusion-height', slab.base);
     map.setPaintProperty(LAYER_IDS.slabGlow, 'fill-extrusion-base', slab.base);
