@@ -15,6 +15,7 @@ import { useToast } from './components/ui/toastContext';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { useSelection } from './hooks/useSelection';
 import { SelectionCamera } from './components/map/SelectionCamera';
+import { FloorLayers } from './components/map/FloorLayers';
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
@@ -75,6 +76,7 @@ function AppShell() {
     <div className="relative h-full w-full overflow-hidden bg-bg">
       <h1 className="sr-only">NYC Floors — 3D map of New York City</h1>
       <MapView onLoad={handleLoad} onError={markReady}>
+        <FloorLayers selection={selection} />
         <SelectionCamera selection={selection} />
         <div className="pointer-events-none absolute right-4 top-4 z-10">
           <MapControls onNotify={(message, tone) => notify({ message, tone })} />
