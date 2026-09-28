@@ -20,6 +20,10 @@ import { FloorMarker } from './components/map/FloorMarker';
 import { getBuilding, getTenant } from './data';
 import { FloorSelector } from './components/floors/FloorSelector';
 import { PanelSkeleton } from './components/ui/PanelSkeleton';
+import { buildShareUrl, parseDeepLink } from './lib/deepLink';
+import { selectionReducer, type Selection } from './lib/selection';
+import { cameraOf, useDeepLinkSync } from './hooks/useDeepLinkSync';
+import { DEFAULT_CAMERA } from './lib/mapConfig';
 
 // Only needed once something is selected: keep it out of the initial bundle.
 const DetailPanel = lazy(() => import('./components/detail/DetailPanel'));
@@ -27,17 +31,38 @@ const DetailPanel = lazy(() => import('./components/detail/DetailPanel'));
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
 
+/** Restores selection and camera from the URL once, at startup. */
+function initialStateFromUrl(): { selection: Selection | null; camera?: typeof DEFAULT_CAMERA } {
+  const link = parseDeepLink(window.location.search);
+  let selection: Selection | null = null;
+  if (link.tenantId) {
+    selection = selectionReducer(null, { type: 'selectTenant', tenantId: link.tenantId });
+  } else if (link.buildingId) {
+    selection = selectionReducer(null, {
+      type: 'selectBuilding',
+      buildingId: link.buildingId,
+      floor: link.floor,
+    });
+  }
+  return { selection, camera: link.camera };
+}
+
+const INITIAL = initialStateFromUrl();
+
 function AppShell() {
   const [mapReady, setMapReady] = useState(false);
   const { notify } = useToast();
-  const [selection, dispatch] = useSelection();
+  const [selection, dispatch] = useSelection(INITIAL.selection);
+  const [map, setMap] = useState<MapLibreMap | null>(null);
+  useDeepLinkSync(map, selection);
   const selectedBuilding = selection ? getBuilding(selection.buildingId) : undefined;
   const selectedTenant = selection?.tenantId ? getTenant(selection.tenantId) : undefined;
   const mapRef = useRef<MapLibreMap | null>(null);
   const markReady = useCallback(() => setMapReady(true), []);
   const handleLoad = useCallback(
-    (map: MapLibreMap) => {
-      mapRef.current = map;
+    (instance: MapLibreMap) => {
+      mapRef.current = instance;
+      setMap(instance);
       markReady();
     },
     [markReady],
@@ -84,7 +109,12 @@ function AppShell() {
   return (
     <div className="relative h-full w-full overflow-hidden bg-bg">
       <h1 className="sr-only">NYC Floors — 3D map of New York City</h1>
-      <MapView onLoad={handleLoad} onError={markReady}>
+      <MapView
+        onLoad={handleLoad}
+        onError={markReady}
+        initialCamera={INITIAL.camera ?? DEFAULT_CAMERA}
+        animateIntro={!INITIAL.camera && !INITIAL.selection}
+      >
         <FloorLayers selection={selection} />
         <SelectionCamera selection={selection} />
         {selectedBuilding && selection?.floor != null && (
@@ -130,7 +160,7 @@ function AppShell() {
             <DetailPanel
               building={selectedBuilding}
               tenant={selectedTenant ?? null}
-              shareUrl={window.location.href}
+              shareUrl={buildShareUrl(selection, map ? cameraOf(map) : undefined)}
               onClose={() =>
                 selection.tenantId ? dispatch({ type: 'closeTenant' }) : dispatch({ type: 'clear' })
               }
