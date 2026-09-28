@@ -1,0 +1,194 @@
+[
+  {
+    "id": "empire-state-building",
+    "name": "Empire State Building",
+    "address": "20 W 34th St, New York, NY 10001",
+    "center": [-73.98566, 40.74844],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-73.986394, 40.748456],
+          [-73.986067, 40.748903],
+          [-73.984926, 40.748424],
+          [-73.985253, 40.747977],
+          [-73.986394, 40.748456]
+        ]
+      ]
+    },
+    "osmId": "way/34633854",
+    "totalFloors": 102,
+    "heightMeters": 381,
+    "groundElevation": 0,
+    "floorHeightMeters": 3.65,
+    "lobbyHeightMeters": 7,
+    "aliases": ["ESB", "350 Fifth Avenue", "350 5th Ave"]
+  },
+  {
+    "id": "one-world-trade-center",
+    "name": "One World Trade Center",
+    "address": "285 Fulton St, New York, NY 10007",
+    "center": [-74.01345, 40.71274],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-74.013941, 40.712633],
+          [-74.013591, 40.713112],
+          [-74.012959, 40.712847],
+          [-74.013309, 40.712368],
+          [-74.013941, 40.712633]
+        ]
+      ]
+    },
+    "totalFloors": 104,
+    "heightMeters": 417,
+    "groundElevation": 0,
+    "floorHeightMeters": 3.9,
+    "lobbyHeightMeters": 15,
+    "aliases": ["1 WTC", "Freedom Tower", "One WTC"]
+  },
+  {
+    "id": "chrysler-building",
+    "name": "Chrysler Building",
+    "address": "405 Lexington Ave, New York, NY 10174",
+    "center": [-73.97545, 40.75162],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-73.975926, 40.751507],
+          [-73.975575, 40.751986],
+          [-73.974974, 40.751733],
+          [-73.975325, 40.751254],
+          [-73.975926, 40.751507]
+        ]
+      ]
+    },
+    "totalFloors": 77,
+    "heightMeters": 282,
+    "groundElevation": 0,
+    "floorHeightMeters": 3.6,
+    "lobbyHeightMeters": 6,
+    "aliases": ["405 Lexington"]
+  },
+  {
+    "id": "30-rockefeller-plaza",
+    "name": "30 Rockefeller Plaza",
+    "address": "30 Rockefeller Plaza, New York, NY 10112",
+    "center": [-73.97928, 40.75924],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-73.979865, 40.759321],
+          [-73.979681, 40.759573],
+          [-73.978695, 40.759159],
+          [-73.978879, 40.758907],
+          [-73.979865, 40.759321]
+        ]
+      ]
+    },
+    "totalFloors": 66,
+    "heightMeters": 259,
+    "groundElevation": 0,
+    "floorHeightMeters": 3.85,
+    "lobbyHeightMeters": 6,
+    "aliases": ["30 Rock", "Rockefeller Center", "Comcast Building"]
+  },
+  {
+    "id": "flatiron-building",
+    "name": "Flatiron Building",
+    "address": "175 5th Ave, New York, NY 10010",
+    "center": [-73.9897, 40.74106],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-73.98963, 40.74143],
+          [-73.9901, 40.74081],
+          [-73.98944, 40.74053],
+          [-73.98963, 40.74143]
+        ]
+      ]
+    },
+    "totalFloors": 22,
+    "heightMeters": 87,
+    "groundElevation": 0,
+    "floorHeightMeters": 3.6,
+    "lobbyHeightMeters": 6,
+    "aliases": ["Fuller Building", "175 Fifth Avenue"]
+  },
+  {
+    "id": "woolworth-building",
+    "name": "Woolworth Building",
+    "address": "233 Broadway, New York, NY 10279",
+    "center": [-74.00817, 40.71236],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-74.008643, 40.712251],
+          [-74.008298, 40.712722],
+          [-74.007697, 40.712469],
+          [-74.008042, 40.711998],
+          [-74.008643, 40.712251]
+        ]
+      ]
+    },
+    "totalFloors": 57,
+    "heightMeters": 241,
+    "groundElevation": 0,
+    "floorHeightMeters": 4.0,
+    "lobbyHeightMeters": 6,
+    "aliases": ["233 Broadway"]
+  },
+  {
+    "id": "432-park-avenue",
+    "name": "432 Park Avenue",
+    "address": "432 Park Ave, New York, NY 10022",
+    "center": [-73.97194, 40.76163],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-73.97217, 40.76158],
+          [-73.972006, 40.761804],
+          [-73.97171, 40.76168],
+          [-73.971874, 40.761456],
+          [-73.97217, 40.76158]
+        ]
+      ]
+    },
+    "totalFloors": 85,
+    "heightMeters": 426,
+    "groundElevation": 0,
+    "floorHeightMeters": 4.9,
+    "lobbyHeightMeters": 10,
+    "aliases": ["432 Park"]
+  },
+  {
+    "id": "new-york-times-building",
+    "name": "The New York Times Building",
+    "address": "620 8th Ave, New York, NY 10018",
+    "center": [-73.99015, 40.75614],
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-73.990582, 40.756013],
+          [-73.990237, 40.756485],
+          [-73.989718, 40.756267],
+          [-73.990063, 40.755795],
+          [-73.990582, 40.756013]
+        ]
+      ]
+    },
+    "totalFloors": 52,
+    "heightMeters": 228,
+    "groundElevation": 0,
+    "floorHeightMeters": 4.2,
+    "lobbyHeightMeters": 6,
+    "aliases": ["620 Eighth Avenue", "Times Building"]
+  }
+]
