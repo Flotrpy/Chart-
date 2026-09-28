@@ -1,4 +1,12 @@
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from 'react';
 import { Loader2, Search, X } from 'lucide-react';
 import type { SearchResult } from '../../types/search';
 import type { GeocoderClient } from '../../lib/geocoder/client';
@@ -40,13 +48,21 @@ function SkeletonRows() {
   );
 }
 
+export interface SearchBarHandle {
+  focus: () => void;
+}
+
 /** Prominent search field with a grouped autocomplete dropdown. */
-export function SearchBar({ geocoder, onSelect }: SearchBarProps) {
+export const SearchBar = forwardRef<SearchBarHandle, SearchBarProps>(function SearchBar(
+  { geocoder, onSelect },
+  ref,
+) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const listId = useId();
+  useImperativeHandle(ref, () => ({ focus: () => inputRef.current?.focus() }), []);
   const search = useSearch(query, geocoder);
   const { recent, add: addRecent, clear: clearRecent } = useRecentSearches();
   const { notify } = useToast();
@@ -157,6 +173,7 @@ export function SearchBar({ geocoder, onSelect }: SearchBarProps) {
           onBlur={() => setOpen(false)}
           onKeyDown={onKeyDown}
           placeholder="Search a business, address or place"
+          aria-keyshortcuts="/"
           role="combobox"
           aria-label="Search New York City"
           aria-expanded={showPanel}
@@ -280,4 +297,4 @@ export function SearchBar({ geocoder, onSelect }: SearchBarProps) {
       <LiveRegion message={announcement} />
     </div>
   );
-}
+});

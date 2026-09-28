@@ -4,7 +4,7 @@ import { MapControls } from './components/controls/MapControls';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import { AttributionControl } from './components/controls/AttributionControl';
 import { OnboardingHint } from './components/ui/OnboardingHint';
-import { SearchBar } from './components/search/SearchBar';
+import { SearchBar, type SearchBarHandle } from './components/search/SearchBar';
 import { geocoder } from './lib/geocoder';
 import type { MapLibreMap } from './lib/maplibre';
 import type { SearchResult } from './types/search';
@@ -29,6 +29,9 @@ import { BottomSheet } from './components/ui/BottomSheet';
 import { SHEET_HEIGHT, type SheetSnap } from './components/ui/sheet';
 import type { CameraPadding } from './components/map/SelectionCamera';
 import { cx } from './components/ui/cx';
+import { LiveRegion } from './components/ui/LiveRegion';
+import { describeSelection } from './lib/announce';
+import { useGlobalShortcuts } from './hooks/useGlobalShortcuts';
 
 // Only needed once something is selected: keep it out of the initial bundle.
 const DetailPanel = lazy(() => import('./components/detail/DetailPanel'));
@@ -61,6 +64,11 @@ function AppShell() {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   useDeepLinkSync(map, selection);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const searchRef = useRef<SearchBarHandle>(null);
+  useGlobalShortcuts({
+    onFocusSearch: () => searchRef.current?.focus(),
+    onEscape: () => dispatch(selection?.tenantId ? { type: 'closeTenant' } : { type: 'clear' }),
+  });
   const [sheetSnap, setSheetSnap] = useState<SheetSnap>('peek');
   const [mobileTab, setMobileTab] = useState<'details' | 'floors'>('details');
   const padding: CameraPadding = isDesktop
@@ -150,7 +158,7 @@ function AppShell() {
         <AttributionControl />
       </footer>
       <div className="pointer-events-none absolute left-4 right-[76px] top-4 z-30 sm:right-auto sm:w-[26rem]">
-        <SearchBar geocoder={geocoder} onSelect={handleSelect} />
+        <SearchBar ref={searchRef} geocoder={geocoder} onSelect={handleSelect} />
       </div>
       {selectedBuilding &&
         selection &&
@@ -236,6 +244,7 @@ function AppShell() {
             </BottomSheet>
           );
         })()}
+      <LiveRegion message={describeSelection(selection)} />
       <LoadingScreen done={mapReady} />
     </div>
   );

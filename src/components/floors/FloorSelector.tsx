@@ -97,16 +97,16 @@ export function FloorSelector({
             on {occupied} floor{occupied === 1 ? '' : 's'}
           </p>
         </div>
-        <IconButton label="Close building" onClick={onClose} className="-mt-1 h-9 w-9">
+        <IconButton label="Close building" onClick={onClose} className="-mt-1">
           <X {...ICON_PROPS_SM} />
         </IconButton>
       </header>
 
       <div className="flex items-center gap-1 border-b border-line px-2 py-1.5">
-        <IconButton label="Go up one floor" onClick={() => step(1)} className="h-9 w-9">
+        <IconButton label="Go up one floor" onClick={() => step(1)}>
           <ChevronUp {...ICON_PROPS_SM} />
         </IconButton>
-        <IconButton label="Go down one floor" onClick={() => step(-1)} className="h-9 w-9">
+        <IconButton label="Go down one floor" onClick={() => step(-1)}>
           <ChevronDown {...ICON_PROPS_SM} />
         </IconButton>
         <button
@@ -114,7 +114,7 @@ export function FloorSelector({
           onClick={() => onSelectFloor(null)}
           aria-pressed={floor === null}
           className={cx(
-            'ml-auto h-9 rounded-md px-3 text-xs font-medium transition-colors',
+            'ml-auto h-11 rounded-md px-3 text-xs font-medium transition-colors',
             floor === null ? 'bg-primary text-white' : 'text-primary hover:bg-primary-soft',
           )}
         >

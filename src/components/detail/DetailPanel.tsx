@@ -58,6 +58,16 @@ export default function DetailPanel({ building, tenant, shareUrl, onClose }: Det
   const title = tenant?.name ?? building.name;
   const position = tenant ? ([tenant.lng, tenant.lat] as const) : building.center;
 
+  // When a tenant opens from search or the floor list, move focus to its
+  // name so keyboard and screen-reader users land on the new content.
+  const focusKey = tenant?.id ?? building.id;
+  useEffect(() => {
+    const active = document.activeElement;
+    const fromElsewhere =
+      !active || active === document.body || active.closest('[role="combobox"], [aria-pressed]');
+    if (fromElsewhere) headingRef.current?.focus({ preventScroll: true });
+  }, [focusKey]);
+
   useEffect(() => {
     if (!copied) return;
     const id = window.setTimeout(() => setCopied(false), 2000);
