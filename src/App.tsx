@@ -13,6 +13,8 @@ import { easeInOutCubic, motionDuration } from './lib/motion';
 import { ToastProvider } from './components/ui/Toasts';
 import { useToast } from './components/ui/toastContext';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
+import { useSelection } from './hooks/useSelection';
+import { SelectionCamera } from './components/map/SelectionCamera';
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
@@ -20,6 +22,7 @@ const LOADING_TIMEOUT_MS = 10_000;
 function AppShell() {
   const [mapReady, setMapReady] = useState(false);
   const { notify } = useToast();
+  const [selection, dispatch] = useSelection();
   const mapRef = useRef<MapLibreMap | null>(null);
   const markReady = useCallback(() => setMapReady(true), []);
   const handleLoad = useCallback(
@@ -40,16 +43,28 @@ function AppShell() {
     }),
   );
 
-  const handleSelect = useCallback((result: SearchResult) => {
-    const map = mapRef.current;
-    if (!map) return;
-    const duration = motionDuration(FLY_DURATION_MS);
-    if (result.bbox && result.kind === 'place') {
-      map.fitBounds(result.bbox, { padding: 80, duration, maxZoom: 16 });
-    } else {
-      map.flyTo({ center: result.position, zoom: 17, duration, easing: easeInOutCubic });
-    }
-  }, []);
+  const handleSelect = useCallback(
+    (result: SearchResult) => {
+      if (result.tenantId) {
+        dispatch({ type: 'selectTenant', tenantId: result.tenantId });
+        return;
+      }
+      if (result.buildingId) {
+        dispatch({ type: 'selectBuilding', buildingId: result.buildingId });
+        return;
+      }
+      dispatch({ type: 'clear' });
+      const map = mapRef.current;
+      if (!map) return;
+      const duration = motionDuration(FLY_DURATION_MS);
+      if (result.bbox && result.kind === 'place') {
+        map.fitBounds(result.bbox, { padding: 80, duration, maxZoom: 16 });
+      } else {
+        map.flyTo({ center: result.position, zoom: 17, duration, easing: easeInOutCubic });
+      }
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     const id = window.setTimeout(markReady, LOADING_TIMEOUT_MS);
@@ -60,6 +75,7 @@ function AppShell() {
     <div className="relative h-full w-full overflow-hidden bg-bg">
       <h1 className="sr-only">NYC Floors — 3D map of New York City</h1>
       <MapView onLoad={handleLoad} onError={markReady}>
+        <SelectionCamera selection={selection} />
         <div className="pointer-events-none absolute right-4 top-4 z-10">
           <MapControls onNotify={(message, tone) => notify({ message, tone })} />
         </div>

@@ -71,6 +71,8 @@ export function MapView({
         maxPitch: MAX_PITCH,
         maxBounds: MAX_BOUNDS,
         attributionControl: false,
+        // Lets the camera look at a point above ground (the selected floor).
+        centerClampedToGround: false,
         canvasContextAttributes: { antialias: true },
       });
     } catch (err) {
