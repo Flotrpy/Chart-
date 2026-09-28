@@ -25,7 +25,7 @@ export const PALETTE = {
   rail: '#D5D9E0',
   boundary: '#CBD2DC',
   labelText: '#334155',
-  labelMuted: '#64748B',
+  labelMuted: '#556274',
   waterLabel: '#3B6FB0',
   halo: '#FFFFFF',
 } as const;
