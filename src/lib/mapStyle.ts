@@ -1,8 +1,17 @@
 import type { ExpressionSpecification, LayerSpecification, StyleSpecification } from 'maplibre-gl';
-import { FONT_BOLD, FONT_ITALIC, FONT_REGULAR, TILE_PROVIDER } from './mapConfig';
+import {
+  BUILDINGS_MIN_ZOOM,
+  FONT_BOLD,
+  FONT_ITALIC,
+  FONT_REGULAR,
+  TILE_PROVIDER,
+} from './mapConfig';
 
 /** Vector source id used by every basemap layer. */
 export const BASEMAP_SOURCE = 'openmaptiles';
+
+/** Layer id of the extruded OSM buildings (the glass shell dims this). */
+export const BUILDINGS_LAYER_ID = 'buildings-3d';
 
 /**
  * Light basemap palette. Deliberately soft and low-contrast so the 3D
@@ -28,6 +37,12 @@ export const PALETTE = {
   labelMuted: '#556274',
   waterLabel: '#3B6FB0',
   halo: '#FFFFFF',
+  /** Building colour ramp, low-rise → supertall: cool light grey to warm white. */
+  buildingLow: '#E3E6EB',
+  buildingMid: '#EAEAEA',
+  buildingHigh: '#F2EEE7',
+  buildingTop: '#FBF8F3',
+  buildingFootprint: '#E6E9EE',
 } as const;
 
 const nameField: ExpressionSpecification = [
@@ -200,6 +215,85 @@ function roadLayers(): LayerSpecification[] {
   ];
 }
 
+/** OSM height in metres; `render_height` is always present in OpenMapTiles. */
+const renderHeight: ExpressionSpecification = ['coalesce', ['get', 'render_height'], 0];
+const renderMinHeight: ExpressionSpecification = ['coalesce', ['get', 'render_min_height'], 0];
+
+function buildingLayers(): LayerSpecification[] {
+  return [
+    {
+      // Flat footprints before extrusion kicks in, so blocks read at mid zoom.
+      id: 'buildings-footprint',
+      type: 'fill',
+      source: BASEMAP_SOURCE,
+      'source-layer': 'building',
+      minzoom: 12,
+      maxzoom: BUILDINGS_MIN_ZOOM + 1,
+      paint: {
+        'fill-color': PALETTE.buildingFootprint,
+        'fill-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          12,
+          0,
+          12.5,
+          0.8,
+          BUILDINGS_MIN_ZOOM + 1,
+          0,
+        ],
+      },
+    },
+    {
+      id: BUILDINGS_LAYER_ID,
+      type: 'fill-extrusion',
+      source: BASEMAP_SOURCE,
+      'source-layer': 'building',
+      minzoom: BUILDINGS_MIN_ZOOM,
+      filter: ['!=', ['get', 'hide_3d'], true],
+      paint: {
+        // Height-based gradient: taller towers drift warmer and brighter so the
+        // skyline reads as layered depth rather than a flat grey mass.
+        'fill-extrusion-color': [
+          'interpolate',
+          ['linear'],
+          renderHeight,
+          0,
+          PALETTE.buildingLow,
+          40,
+          PALETTE.buildingMid,
+          150,
+          PALETTE.buildingHigh,
+          300,
+          PALETTE.buildingTop,
+        ],
+        // Buildings "grow" over half a zoom level instead of popping in.
+        'fill-extrusion-height': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          BUILDINGS_MIN_ZOOM,
+          0,
+          BUILDINGS_MIN_ZOOM + 0.5,
+          renderHeight,
+        ],
+        'fill-extrusion-base': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          BUILDINGS_MIN_ZOOM,
+          0,
+          BUILDINGS_MIN_ZOOM + 0.5,
+          renderMinHeight,
+        ],
+        'fill-extrusion-opacity': 0.94,
+        // Darkens the base of each wall: cheap ambient occlusion / soft shadow.
+        'fill-extrusion-vertical-gradient': true,
+      },
+    },
+  ];
+}
+
 const textHalo = {
   'text-halo-color': PALETTE.halo,
   'text-halo-width': 1.4,
@@ -308,6 +402,6 @@ export function createMapStyle(): StyleSpecification {
       intensity: 0.35,
       position: [1.3, 210, 35],
     },
-    layers: [...baseLayers(), ...roadLayers(), ...labelLayers()],
+    layers: [...baseLayers(), ...roadLayers(), ...buildingLayers(), ...labelLayers()],
   };
 }

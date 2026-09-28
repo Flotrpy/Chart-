@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
-import { BASEMAP_SOURCE, PALETTE, createMapStyle } from './mapStyle';
+import { BASEMAP_SOURCE, BUILDINGS_LAYER_ID, PALETTE, createMapStyle } from './mapStyle';
 
 /** Relative luminance per WCAG 2.x, 0 (black) – 1 (white). */
 function luminance(hex: string): number {
@@ -32,6 +32,19 @@ describe('createMapStyle', () => {
       }
     }
     expect(style.sources[BASEMAP_SOURCE]).toBeDefined();
+  });
+
+  it('extrudes buildings from OpenMapTiles render_height / render_min_height', () => {
+    const layer = createMapStyle().layers.find((l) => l.id === BUILDINGS_LAYER_ID);
+    expect(layer?.type).toBe('fill-extrusion');
+    const paint = JSON.stringify(layer && 'paint' in layer ? layer.paint : {});
+    expect(paint).toContain('render_height');
+    expect(paint).toContain('render_min_height');
+  });
+
+  it('draws labels above the buildings', () => {
+    const ids = createMapStyle().layers.map((l) => l.id);
+    expect(ids.indexOf('road-label')).toBeGreaterThan(ids.indexOf(BUILDINGS_LAYER_ID));
   });
 
   it('returns a fresh object each call', () => {
