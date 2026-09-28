@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { MapView } from './components/map/MapView';
 import { MapControls } from './components/controls/MapControls';
 import { LoadingScreen } from './components/ui/LoadingScreen';
+import { AttributionControl } from './components/controls/AttributionControl';
 
 /** Never trap users behind the splash if tiles are slow or blocked. */
 const LOADING_TIMEOUT_MS = 10_000;
@@ -23,6 +24,9 @@ export default function App() {
           <MapControls />
         </div>
       </MapView>
+      <footer className="pointer-events-none absolute bottom-3 right-3 z-10 flex justify-end">
+        <AttributionControl />
+      </footer>
       <LoadingScreen done={mapReady} />
     </div>
   );
