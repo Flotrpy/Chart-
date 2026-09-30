@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+*.local
+.DS_Store
+*.tsbuildinfo
+.vite
+
+# TypeScript sources only; never commit compiler output under src/
+src/**/*.js
+vite.config.js
+vitest.config.js
